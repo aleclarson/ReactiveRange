@@ -1,0 +1,10 @@
+{
+  "name": "ReactiveRange",
+  "version": "1.0.0",
+  "main": "js/ReactiveRange",
+  "lotus": {
+    "plugins": [
+      "lotus-coffee"
+    ]
+  }
+}
