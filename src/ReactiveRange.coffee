@@ -13,9 +13,11 @@ type.defineValues (range) ->
 
   didSet: Event()
 
-  _dep: Tracker.Dependency()
+  _array: range or []
 
-  _range: range or []
+  _first: Tracker.Dependency()
+
+  _last: Tracker.Dependency()
 
 type.definePrototype
 
@@ -23,40 +25,53 @@ type.definePrototype
 
     get: ->
       if Tracker.isActive
-        @_dep.depend()
-      return @_range[0]
+        @_first.depend()
+      return @_array[0]
 
     set: (startIndex) ->
-      @_range[0] = startIndex
-      @_dep.changed()
-      @didSet.emit @_range
+      @_array[0] = startIndex
+      @_first.changed()
+      @didSet.emit @_array
       return
 
   "1":
 
     get: ->
       if Tracker.isActive
-        @_dep.depend()
-      return @_range[1]
+        @_last.depend()
+      return @_array[1]
 
     set: (endIndex) ->
-      @_range[1] = endIndex
-      @_dep.changed()
-      @didSet.emit @_range
+      @_array[1] = endIndex
+      @_last.changed()
+      @didSet.emit @_array
       return
+
+  get: ->
+    if Tracker.isActive
+      @_first.depend()
+      @_last.depend()
+    return @_array
 
 type.defineMethods
 
   set: (range) ->
     assertType range, Array
-    @_range = range
-    @_dep.changed()
-    @didSet.emit @_range
+
+    @_array = range
+
+    if range[0] is @_array[0]
+      if range[1] isnt @_array[1]
+        @_last.changed()
+        @didSet.emit @_array
+
+    else
+      @_first.changed()
+      @_last.changed() if range[1] isnt @_array[1]
+      @didSet.emit @_array
     return
 
   toString: ->
-    if Tracker.isActive
-      @_dep.depend()
-    return @_range.toString()
+    @get().toString()
 
 module.exports = type.build()

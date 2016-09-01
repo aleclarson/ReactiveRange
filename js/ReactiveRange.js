@@ -17,8 +17,9 @@ type.defineArgs({
 type.defineValues(function(range) {
   return {
     didSet: Event(),
-    _dep: Tracker.Dependency(),
-    _range: range || []
+    _array: range || [],
+    _first: Tracker.Dependency(),
+    _last: Tracker.Dependency()
   };
 });
 
@@ -26,43 +27,57 @@ type.definePrototype({
   "0": {
     get: function() {
       if (Tracker.isActive) {
-        this._dep.depend();
+        this._first.depend();
       }
-      return this._range[0];
+      return this._array[0];
     },
     set: function(startIndex) {
-      this._range[0] = startIndex;
-      this._dep.changed();
-      this.didSet.emit(this._range);
+      this._array[0] = startIndex;
+      this._first.changed();
+      this.didSet.emit(this._array);
     }
   },
   "1": {
     get: function() {
       if (Tracker.isActive) {
-        this._dep.depend();
+        this._last.depend();
       }
-      return this._range[1];
+      return this._array[1];
     },
     set: function(endIndex) {
-      this._range[1] = endIndex;
-      this._dep.changed();
-      this.didSet.emit(this._range);
+      this._array[1] = endIndex;
+      this._last.changed();
+      this.didSet.emit(this._array);
     }
+  },
+  get: function() {
+    if (Tracker.isActive) {
+      this._first.depend();
+      this._last.depend();
+    }
+    return this._array;
   }
 });
 
 type.defineMethods({
   set: function(range) {
     assertType(range, Array);
-    this._range = range;
-    this._dep.changed();
-    this.didSet.emit(this._range);
+    this._array = range;
+    if (range[0] === this._array[0]) {
+      if (range[1] !== this._array[1]) {
+        this._last.changed();
+        this.didSet.emit(this._array);
+      }
+    } else {
+      this._first.changed();
+      if (range[1] !== this._array[1]) {
+        this._last.changed();
+      }
+      this.didSet.emit(this._array);
+    }
   },
   toString: function() {
-    if (Tracker.isActive) {
-      this._dep.depend();
-    }
-    return this._range.toString();
+    return this.get().toString();
   }
 });
 
