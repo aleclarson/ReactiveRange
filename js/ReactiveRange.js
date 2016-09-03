@@ -32,9 +32,13 @@ type.definePrototype({
       return this._array[0];
     },
     set: function(startIndex) {
+      var canEmit, oldRange;
+      if (canEmit = this.didSet.hasListeners) {
+        oldRange = this._array.slice();
+      }
       this._array[0] = startIndex;
       this._first.changed();
-      this.didSet.emit(this._array);
+      canEmit && this.didSet.emit(this._array, oldRange);
     }
   },
   "1": {
@@ -45,35 +49,41 @@ type.definePrototype({
       return this._array[1];
     },
     set: function(endIndex) {
+      var canEmit, oldRange;
+      if (canEmit = this.didSet.hasListeners) {
+        oldRange = this._array.slice();
+      }
       this._array[1] = endIndex;
       this._last.changed();
-      this.didSet.emit(this._array);
+      canEmit && this.didSet.emit(this._array, oldRange);
     }
-  },
+  }
+});
+
+type.defineMethods({
   get: function() {
     if (Tracker.isActive) {
       this._first.depend();
       this._last.depend();
     }
     return this._array;
-  }
-});
-
-type.defineMethods({
+  },
   set: function(range) {
+    var oldRange;
     assertType(range, Array);
+    oldRange = this._array;
     this._array = range;
-    if (range[0] === this._array[0]) {
-      if (range[1] !== this._array[1]) {
+    if (range[0] === oldRange[0]) {
+      if (range[1] !== oldRange[1]) {
         this._last.changed();
-        this.didSet.emit(this._array);
+        this.didSet.emit(range, oldRange);
       }
     } else {
       this._first.changed();
-      if (range[1] !== this._array[1]) {
+      if (range[1] !== oldRange[1]) {
         this._last.changed();
       }
-      this.didSet.emit(this._array);
+      this.didSet.emit(range, oldRange);
     }
   },
   toString: function() {

@@ -29,9 +29,11 @@ type.definePrototype
       return @_array[0]
 
     set: (startIndex) ->
+      if canEmit = @didSet.hasListeners
+        oldRange = @_array.slice()
       @_array[0] = startIndex
       @_first.changed()
-      @didSet.emit @_array
+      canEmit and @didSet.emit @_array, oldRange
       return
 
   "1":
@@ -42,10 +44,14 @@ type.definePrototype
       return @_array[1]
 
     set: (endIndex) ->
+      if canEmit = @didSet.hasListeners
+        oldRange = @_array.slice()
       @_array[1] = endIndex
       @_last.changed()
-      @didSet.emit @_array
+      canEmit and @didSet.emit @_array, oldRange
       return
+
+type.defineMethods
 
   get: ->
     if Tracker.isActive
@@ -53,22 +59,21 @@ type.definePrototype
       @_last.depend()
     return @_array
 
-type.defineMethods
-
   set: (range) ->
     assertType range, Array
 
+    oldRange = @_array
     @_array = range
 
-    if range[0] is @_array[0]
-      if range[1] isnt @_array[1]
+    if range[0] is oldRange[0]
+      if range[1] isnt oldRange[1]
         @_last.changed()
-        @didSet.emit @_array
+        @didSet.emit range, oldRange
 
     else
       @_first.changed()
-      @_last.changed() if range[1] isnt @_array[1]
-      @didSet.emit @_array
+      @_last.changed() if range[1] isnt oldRange[1]
+      @didSet.emit range, oldRange
     return
 
   toString: ->

@@ -1,7 +1,7 @@
 
 # ReactiveRange v1.0.0 ![stable](https://img.shields.io/badge/stability-stable-4EBA0F.svg?style=flat)
 
-- Uses [aleclarson/tracker](github.com/aleclarson/tracker)
+- Uses [aleclarson/tracker](https://github.com/aleclarson/tracker)
 
 ```coffee
 ReactiveRange = require "ReactiveRange"
