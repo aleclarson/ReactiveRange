@@ -21,7 +21,7 @@ type.defineValues (range) ->
 
 type.definePrototype
 
-  "0":
+  start:
 
     get: ->
       if Tracker.isActive
@@ -36,7 +36,7 @@ type.definePrototype
       canEmit and @didSet.emit @_array, oldRange
       return
 
-  "1":
+  end:
 
     get: ->
       if Tracker.isActive

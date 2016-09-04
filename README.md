@@ -18,10 +18,9 @@ listener = range
 computation = Tracker.autorun ->
   console.log range.toString()
 
-# Mutating directly is supported.
-range[0] = 1
-range[1] = 2
+range.start = 1
+range.end = 2
 
-# You can also set the backing array.
+# Set both at once.
 range.set [2, 3]
 ```

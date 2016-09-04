@@ -24,7 +24,7 @@ type.defineValues(function(range) {
 });
 
 type.definePrototype({
-  "0": {
+  start: {
     get: function() {
       if (Tracker.isActive) {
         this._first.depend();
@@ -41,7 +41,7 @@ type.definePrototype({
       canEmit && this.didSet.emit(this._array, oldRange);
     }
   },
-  "1": {
+  end: {
     get: function() {
       if (Tracker.isActive) {
         this._last.depend();
