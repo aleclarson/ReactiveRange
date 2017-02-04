@@ -6,8 +6,7 @@ Type = require "Type"
 
 type = Type "ReactiveRange"
 
-type.defineArgs
-  range: Array
+type.defineArgs [Array.Maybe]
 
 type.defineValues (range) ->
 
