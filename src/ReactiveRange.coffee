@@ -1,7 +1,7 @@
 
 assertType = require "assertType"
 Tracker = require "tracker"
-Event = require "Event"
+Event = require "eve"
 Type = require "Type"
 
 type = Type "ReactiveRange"
